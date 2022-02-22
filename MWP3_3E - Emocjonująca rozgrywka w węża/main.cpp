@@ -183,6 +183,7 @@ void snake::move(char moveType)
 
 int main()
 {
+    ios_base::sync_with_stdio(false);
     int amountOfTests;
     cin >> amountOfTests;
 
