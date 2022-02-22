@@ -1,1 +1,5 @@
 .vscode
+kata
+main
+*.test
+.notes*
