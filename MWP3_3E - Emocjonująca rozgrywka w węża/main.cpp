@@ -30,41 +30,9 @@ public:
     }
 };
 
-class snakeNode
-{
-    coordinates position;
-    snakeNode *nextNode;
-
-public:
-    snakeNode(coordinates p_position)
-    : position(p_position), nextNode(nullptr)
-    {}
-    coordinates getPosition()
-    {
-        return position;
-    }
-    void setNextNode(snakeNode *newNextNode)
-    {
-        nextNode = newNextNode;
-    }
-    void setPosition(coordinates newPosition)
-    {
-        position = newPosition;
-    }
-    snakeNode* nextPtr()
-    {
-        return nextNode;
-    }
-    bool isHead()
-    {
-        if(nextNode == nullptr) return true;
-        return false;
-    }
-};
-
 class snake
 {
-    vector<snakeNode> nodes;
+    vector<coordinates> nodesPositions;
 
     enum direction
     {
@@ -120,17 +88,18 @@ public:
     snake()
     {
         snakeDirection = NORTH;
-        nodes.push_back( snakeNode( coordinates(0,0) ) );
+        nodesPositions.push_back( coordinates(0,0) );
     }
 };
 
 bool snake::isDead()
 {
-    int index = 0; 
+    int index = 0;
+    int headIndex = nodesPositions.size() - 1; 
 
-    while(index < nodes.size() - 1)
+    while(index < headIndex)
     {
-        int distance = nodes.back().getPosition().distanceInNodesFrom( nodes[index].getPosition() );
+        int distance = nodesPositions[headIndex].distanceInNodesFrom( nodesPositions[index] );
 
         if(distance == 0) return true;
 
@@ -152,7 +121,7 @@ void snake::move(char moveType)
         break;
     }
 
-    coordinates newPosition = nodes.back().getPosition();
+    coordinates newPosition = nodesPositions.back();
 
     switch(snakeDirection)
     {
@@ -173,48 +142,51 @@ void snake::move(char moveType)
         break;
     }
 
-    nodes.push_back( snakeNode(newPosition) );
+    nodesPositions.push_back( newPosition );
     
     if(moveType != 'E')
     {
-        nodes.erase( nodes.begin() );
+        nodesPositions.erase( nodesPositions.begin() );
     }
 }
 
 int main()
 {
     ios_base::sync_with_stdio(false);
+
     int amountOfTests;
     cin >> amountOfTests;
 
     for(int i = 0; i < amountOfTests; i++)
     {
         snake testSnake;
+
         int amountOfMoves;
         cin >> amountOfMoves;
         
         string moves;
         cin >> moves;
         
-        int k = 0;
-        int amountOfEaten = 0;
+        int currMoveIndex = 0;
+        int amountOfMeals = 0;
 
-        while(amountOfEaten < 2 && k < amountOfMoves)
+        //skiping until snake have nodes > 2, after his second meal he is 3 nodes long straight snake, up to this moment symulating his every move is worthlesss   
+        while(amountOfMeals < 2 && currMoveIndex < amountOfMoves)
         {
-            if(moves[k] == 'E')
+            if(moves[currMoveIndex] == 'E')
             {
-                amountOfEaten++;
+                amountOfMeals++;
                 testSnake.move('E');
             } 
-            k++;
+            currMoveIndex++;
         }
    
-        for(; k < amountOfMoves; k++)
+        for(; currMoveIndex < amountOfMoves; currMoveIndex++)
         {
-            testSnake.move(moves[k]);
+            testSnake.move(moves[currMoveIndex]);
             if(testSnake.isDead())
             {
-                cout << k + 1 << endl;
+                cout << currMoveIndex + 1 << endl;
                 break;
             }
         }
